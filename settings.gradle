@@ -1,0 +1,3 @@
+rootProject.name = 'kaleidoskop'
+
+include('GUI', 'Server')
