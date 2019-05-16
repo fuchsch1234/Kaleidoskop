@@ -4,7 +4,7 @@ plugins {
 }
 
 allprojects {
-    group = "de.fuchsch"
+    group = "de.fuchsch.kaleidoskop"
     version = "0.1.0-RC"
 
     val kotlinVersion = "1.3.31"
