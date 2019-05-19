@@ -38,7 +38,7 @@ tasks.withType<KotlinCompile> {
     sourceCompatibility = "1.8"
 }
 
-tasks.withType<BootJar> {
+springBoot {
     mainClassName = "${group}.server.Server"
 }
 
