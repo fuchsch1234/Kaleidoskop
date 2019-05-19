@@ -1,0 +1,48 @@
+package de.fuchsch.kaleidoskop.server.model
+
+import org.hibernate.annotations.Type
+import java.util.*
+import javax.persistence.*
+
+/**
+ * Data access object for images.
+ *
+ * Every image stores the binary data, metadata for this image and all associated tags.
+ *
+ * @property id Primary key for this object.
+ * @property name The filename of this image.
+ * @property tags All tags associated with this image.
+ * @property data Binary image.
+ */
+@Entity
+data class ImageDAO (
+    @Id
+    @GeneratedValue(strategy=GenerationType.IDENTITY)
+    val id: Long,
+
+    @Column(unique=true, nullable=false)
+    val name: String,
+
+    // Cascade type for this property creates and updates tags
+    @ManyToMany(cascade=[CascadeType.PERSIST, CascadeType.MERGE])
+    @JoinTable(
+        name="image_tag",
+        joinColumns=[JoinColumn(name="image_id", referencedColumnName="id")],
+        inverseJoinColumns=[JoinColumn(name="tag_id", referencedColumnName="id")]
+    )
+    val tags: List<TagDAO>,
+
+    @Type(type="org.hibernate.type.BinaryType")
+    @Column(nullable=false)
+    val data: ByteArray
+) {
+
+    override fun hashCode() = Objects.hashCode(name)
+
+    override fun equals(other: Any?) = when {
+        this === other -> true
+        other is ImageDAO -> this.name == other.name
+        else -> false
+    }
+
+}
