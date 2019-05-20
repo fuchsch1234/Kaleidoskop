@@ -1,0 +1,34 @@
+{
+  "scenarioName": "Upload a file to the server and assert success",
+  "steps": [
+    {
+      "name": "upload_a_file",
+      "url": "/images",
+      "operation": "POST",
+      "request": {
+        "headers": { "Content-Type":  "multipart/form-data" },
+        "body": {
+          "files": ["file:integrationtest/files/test.txt"],
+          "boundary": "--1122-boundary--"
+        }
+      },
+      "assertions": {
+        "status": 201,
+        "headers": { "Location": ["$CONTAINS.STRING:images"]}
+      }
+    },
+    {
+      "name": "get_image",
+      "url": "${$.upload_a_file.response.headers.Location[0]}",
+      "operation": "GET",
+      "request": { "headers":  {} },
+      "assertions": {
+        "status": 200,
+        "body": {
+          "name": "test.txt",
+          "tags.SIZE": 0
+        }
+      }
+    }
+  ]
+}
