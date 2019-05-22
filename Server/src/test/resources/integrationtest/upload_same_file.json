@@ -1,5 +1,5 @@
 {
-  "scenarioName": "Upload a file to the server and assert success",
+  "scenarioName": "Uploading a file twice fails the second time",
   "steps": [
     {
       "name": "upload_a_file",
