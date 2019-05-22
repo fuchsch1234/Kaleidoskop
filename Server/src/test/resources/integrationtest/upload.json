@@ -29,6 +29,24 @@
           "tags.SIZE": 0
         }
       }
+    },
+    {
+      "name": "delete_image",
+      "url": "${$.upload_a_file.response.headers.Location[0]}",
+      "operation": "DELETE",
+      "request": { "headers":  {} },
+      "assertions": {
+        "status": 200
+      }
+    },
+    {
+      "name": "try_to_get_deleted_image",
+      "url": "${$.upload_a_file.response.headers.Location[0]}",
+      "operation": "GET",
+      "request": { "headers":  {} },
+      "assertions": {
+        "status": 404
+      }
     }
   ]
 }

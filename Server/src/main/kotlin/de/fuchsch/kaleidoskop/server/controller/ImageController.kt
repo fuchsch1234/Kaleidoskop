@@ -55,6 +55,12 @@ class ImageController (
                 ok(newEntity)
             }.orElse(notFound().build())
 
+    @DeleteMapping("/{id:[\\d]+}")
+    fun delete(@PathVariable id: Long): ResponseEntity<Unit> {
+        imageRepository.deleteById(id)
+        return ok().build()
+    }
+
     @PostMapping("/search/filterByTags", produces=["application/json"])
     fun filterByTags(@RequestBody filter: Filter) =
             filter.includes.map {
