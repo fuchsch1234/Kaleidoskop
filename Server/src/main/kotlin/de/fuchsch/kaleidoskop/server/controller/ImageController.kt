@@ -46,11 +46,11 @@ class ImageController (
 
     @PutMapping("/{id:[\\d]+}", produces=["application/json"])
     fun update(@PathVariable("id") image: Optional<ImageDAO>, @RequestBody newImage: ImageDAO) =
-            image.map {
-                val newEntity = newImage.copy()
-                imageRepository.save(newEntity)
-                ok(newEntity)
-            }.orElse(notFound().build())
+        image.map {
+            val newEntity = newImage.copy()
+            imageRepository.save(newEntity)
+            ok(newEntity)
+        }.orElse(notFound().build())
 
     @DeleteMapping("/{id:[\\d]+}")
     fun delete(@PathVariable("id") image: Optional<ImageDAO>): ResponseEntity<Unit> =
@@ -61,7 +61,5 @@ class ImageController (
 
     @PostMapping("/search/filterByTags", produces=["application/json"])
     fun filterByTags(@RequestBody filter: Filter) =
-            filter.includes.map {
-                imageRepository.findByTagsName(it).toSet()
-            }.reduce { acc, set -> acc.intersect(set) }
+        filter.includes.map { imageRepository.findByTagsName(it).toSet() }.reduce { acc, set -> acc.intersect(set) }
 }
