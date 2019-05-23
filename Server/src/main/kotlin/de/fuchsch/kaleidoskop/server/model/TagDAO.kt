@@ -23,7 +23,7 @@ data class TagDAO (
     val name: String,
 
     @ManyToMany(mappedBy="tags")
-    val images: List<ImageDAO>
+    val images: List<ImageDAO> = emptyList()
 ) {
 
     override fun hashCode() = Objects.hashCode(name)

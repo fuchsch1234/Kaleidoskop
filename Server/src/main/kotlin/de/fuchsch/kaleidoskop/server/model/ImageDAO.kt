@@ -1,5 +1,6 @@
 package de.fuchsch.kaleidoskop.server.model
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import org.hibernate.annotations.Type
 import java.util.*
 import javax.persistence.*
@@ -30,6 +31,7 @@ data class ImageDAO (
         joinColumns=[JoinColumn(name="image_id", referencedColumnName="id")],
         inverseJoinColumns=[JoinColumn(name="tag_id", referencedColumnName="id")]
     )
+    @JsonIgnoreProperties(value=["images"])
     val tags: List<TagDAO>,
 
     @Type(type="org.hibernate.type.BinaryType")
