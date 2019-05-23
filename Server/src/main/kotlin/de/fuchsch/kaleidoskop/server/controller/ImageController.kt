@@ -30,11 +30,11 @@ class ImageController (
     @PostMapping("")
     fun upload(@RequestParam("file") file: MultipartFile): ResponseEntity<Unit> {
         val image = ImageDAO(0, file.originalFilename ?: "0.jpg", emptyList(), file.bytes)
-        try {
+        return try {
             imageRepository.save(image)
-            return created(URI("/images/${image.id}")).build()
+            created(URI("/images/${image.id}")).build()
         } catch (e: Throwable) {
-            return ResponseEntity.status(HttpStatus.CONFLICT).build()
+            ResponseEntity.status(HttpStatus.CONFLICT).build()
         }
     }
 
