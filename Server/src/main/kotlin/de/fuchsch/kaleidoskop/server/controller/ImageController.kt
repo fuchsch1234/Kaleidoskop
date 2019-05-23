@@ -29,7 +29,9 @@ class ImageController (
 
     @PostMapping("")
     fun upload(@RequestParam("file") file: MultipartFile): ResponseEntity<Unit> {
-        val image = ImageDAO(0, file.originalFilename ?: "0.jpg", emptyList(), file.bytes)
+        val name = file.originalFilename ?: UUID.randomUUID().toString()
+        val mimeType = MimetypesFileTypeMap.getDefaultFileTypeMap().getContentType(name)
+        val image = ImageDAO(0, name, mimeType, emptyList(), file.bytes)
         return try {
             imageRepository.save(image)
             created(URI("/images/${image.id}")).build()
@@ -40,12 +42,7 @@ class ImageController (
 
     @GetMapping("files/{id:[\\d]+}")
     fun download(@PathVariable("id") image: Optional<ImageDAO>) =
-                image.map {
-                    val valueMap = LinkedMultiValueMap<String, String>()
-                    val type = MimetypesFileTypeMap.getDefaultFileTypeMap().getContentType(it.name)
-                    valueMap.add(HttpHeaders.CONTENT_TYPE, type)
-                    ResponseEntity(it.data, valueMap, HttpStatus.OK)
-                }.orElse(notFound().build())
+        image.map { ok().header(HttpHeaders.CONTENT_TYPE, it.mimeType).body(it.data) }.orElse(notFound().build())
 
     @PutMapping("/{id:[\\d]+}", produces=["application/json"])
     fun update(@PathVariable("id") image: Optional<ImageDAO>, @RequestBody newImage: ImageDAO) =

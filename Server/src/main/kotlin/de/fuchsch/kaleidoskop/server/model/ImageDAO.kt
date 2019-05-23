@@ -24,6 +24,9 @@ data class ImageDAO (
     @Column(unique=true, nullable=false)
     val name: String,
 
+    @Column(nullable=false)
+    val mimeType: String,
+
     // Cascade type for this property creates and updates tags
     @ManyToMany(cascade=[CascadeType.PERSIST, CascadeType.MERGE])
     @JoinTable(
