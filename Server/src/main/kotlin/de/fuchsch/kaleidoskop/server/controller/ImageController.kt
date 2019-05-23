@@ -12,6 +12,7 @@ import org.springframework.util.LinkedMultiValueMap
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.multipart.MultipartFile
 import java.net.URI
+import java.util.*
 import javax.activation.MimetypesFileTypeMap
 
 @RestController
@@ -24,7 +25,7 @@ class ImageController (
     fun getAll() = imageRepository.findAll().map { ok(it) }
 
     @GetMapping("/{id:[\\d]+}", produces=["application/json"])
-    fun getById(@PathVariable id: Long) = imageRepository.findById(id).map { ok(it) }.orElse(notFound().build())
+    fun getById(@PathVariable("id") image: Optional<ImageDAO>) = image.map { ok(it) }.orElse(notFound().build())
 
     @PostMapping("")
     fun upload(@RequestParam("file") file: MultipartFile): ResponseEntity<Unit> {
@@ -38,9 +39,8 @@ class ImageController (
     }
 
     @GetMapping("files/{id:[\\d]+}")
-    fun download(@PathVariable id: Long) =
-            imageRepository.findById(id)
-                .map {
+    fun download(@PathVariable("id") image: Optional<ImageDAO>) =
+                image.map {
                     val valueMap = LinkedMultiValueMap<String, String>()
                     val type = MimetypesFileTypeMap.getDefaultFileTypeMap().getContentType(it.name)
                     valueMap.add(HttpHeaders.CONTENT_TYPE, type)
@@ -48,18 +48,19 @@ class ImageController (
                 }.orElse(notFound().build())
 
     @PutMapping("/{id:[\\d]+}", produces=["application/json"])
-    fun update(@PathVariable id: Long, @RequestBody image: ImageDAO) =
-            imageRepository.findById(id).map {
-                val newEntity = image.copy()
+    fun update(@PathVariable("id") image: Optional<ImageDAO>, @RequestBody newImage: ImageDAO) =
+            image.map {
+                val newEntity = newImage.copy()
                 imageRepository.save(newEntity)
                 ok(newEntity)
             }.orElse(notFound().build())
 
     @DeleteMapping("/{id:[\\d]+}")
-    fun delete(@PathVariable id: Long): ResponseEntity<Unit> {
-        imageRepository.deleteById(id)
-        return ok().build()
-    }
+    fun delete(@PathVariable("id") image: Optional<ImageDAO>): ResponseEntity<Unit> =
+        image.map {
+            imageRepository.delete(it)
+            ok().build<Unit>()
+        }.orElse(notFound().build())
 
     @PostMapping("/search/filterByTags", produces=["application/json"])
     fun filterByTags(@RequestBody filter: Filter) =
