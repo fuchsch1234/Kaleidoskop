@@ -1,5 +1,6 @@
 package de.fuchsch.kaleidoskop.server.model
 
+import com.fasterxml.jackson.annotation.JsonIgnore
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import org.hibernate.annotations.Type
 import java.util.*
@@ -39,6 +40,7 @@ data class ImageDAO (
 
     @Type(type="org.hibernate.type.BinaryType")
     @Column(nullable=false)
+    @JsonIgnore
     val data: ByteArray
 ) {
 
@@ -49,5 +51,13 @@ data class ImageDAO (
         other is ImageDAO -> this.name == other.name
         else -> false
     }
+
+    fun updateWith(update: ImageUpdateDTO): ImageDAO = ImageDAO(
+        id = update.id ?: this.id,
+        name = update.name ?: this.name,
+        mimeType = update.mimeType ?: this.mimeType,
+        tags = update.tags ?: this.tags,
+        data = this.data
+        )
 
 }

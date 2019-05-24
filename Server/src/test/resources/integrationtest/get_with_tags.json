@@ -33,15 +33,11 @@
     {
       "name": "add_tags",
       "url": "${$.upload_a_file.response.headers.Location[0]}",
-      "operation": "PUT",
+      "operation": "PATCH",
       "request": {
         "headers": {},
         "body": {
-          "id": "${$.get_image.response.body.id}",
-          "name": "${$.get_image.response.body.name}",
-          "mimeType": "${$.get_image.response.body.mimeType}",
-          "tags": [{"id": 0, "name": "first tag"}, {"id": 0, "name":  "second tag"}],
-          "data": "${$.get_image.response.body.data}"
+          "tags": [{"id": 0, "name": "first tag"}, {"id": 0, "name":  "second tag"}]
         }
       },
       "assertions": {
