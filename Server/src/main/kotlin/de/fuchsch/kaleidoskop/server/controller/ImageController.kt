@@ -2,6 +2,7 @@ package de.fuchsch.kaleidoskop.server.controller
 
 import de.fuchsch.kaleidoskop.server.model.Filter
 import de.fuchsch.kaleidoskop.server.model.ImageDAO
+import de.fuchsch.kaleidoskop.server.model.ImageUpdateDTO
 import de.fuchsch.kaleidoskop.server.repositories.ImageRepository
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpHeaders
@@ -47,9 +48,16 @@ class ImageController (
     @PutMapping("/{id:[\\d]+}", produces=["application/json"])
     fun update(@PathVariable("id") image: Optional<ImageDAO>, @RequestBody newImage: ImageDAO) =
         image.map {
-            val newEntity = newImage.copy()
-            imageRepository.save(newEntity)
-            ok(newEntity)
+            imageRepository.save(newImage)
+            ok(newImage)
+        }.orElse(notFound().build())
+
+    @PatchMapping("/{id:[\\d]+}", produces=["application/json"])
+    fun patch(@PathVariable("id") image: Optional<ImageDAO>, @RequestBody changes: ImageUpdateDTO) =
+        image.map {
+            val newImage = it.updateWith(changes)
+            imageRepository.save(newImage)
+            ok(newImage)
         }.orElse(notFound().build())
 
     @DeleteMapping("/{id:[\\d]+}")
