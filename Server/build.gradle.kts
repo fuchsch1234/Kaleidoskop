@@ -24,9 +24,7 @@ dependencies {
         exclude(group="junit", module="junit")
     }
     testImplementation("org.junit.jupiter:junit-jupiter-api:${rootProject.extra["junitVersion"]}")
-    testImplementation("org.jsmart:zerocode-tdd:1.3.7")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:${rootProject.extra["junitVersion"]}")
-    testRuntimeOnly("org.junit.vintage:junit-vintage-engine:${rootProject.extra["junitVersion"]}")
     testRuntimeOnly("com.h2database:h2")
 }
 
