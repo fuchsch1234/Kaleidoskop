@@ -17,7 +17,7 @@ import java.util.*
 import javax.activation.MimetypesFileTypeMap
 
 @RestController
-@RequestMapping("/images")
+@RequestMapping("/api/v1/images")
 class ImageController (
     @Autowired val imageRepository: ImageRepository
 ) {
@@ -35,7 +35,7 @@ class ImageController (
         val image = ImageDAO(0, name, mimeType, emptyList(), file.bytes)
         return try {
             imageRepository.save(image)
-            created(URI("/images/${image.id}")).build()
+            created(URI("/api/v1/images/${image.id}")).build()
         } catch (e: Throwable) {
             ResponseEntity.status(HttpStatus.CONFLICT).build()
         }

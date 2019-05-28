@@ -18,7 +18,7 @@ class UploadTest (
 ) {
 
     fun uploadFileRequest(filename: String) =
-        MockMvcRequestBuilders.multipart("/images")
+        MockMvcRequestBuilders.multipart("/api/v1/images")
             .file(MockMultipartFile("file", filename, "text/plain", ByteArray(255)))
 
     @Test

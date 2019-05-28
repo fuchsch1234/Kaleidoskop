@@ -30,7 +30,7 @@ class UpdateTest (
     private val mapper = ObjectMapper()
 
     fun uploadFileRequest(filename: String) =
-        MockMvcRequestBuilders.multipart("/images")
+        MockMvcRequestBuilders.multipart("/api/v1/images")
             .file(MockMultipartFile("file", filename, "text/plain", ByteArray(255)))
 
     @Test
@@ -39,24 +39,24 @@ class UpdateTest (
         mvc.perform(uploadFileRequest("filename2.txt")).andExpect(status().isCreated)
 
         val patchDTO = ImageUpdateDTO(id=null, name=null, mimeType=null, tags=tags)
-        mvc.perform(patch("/images/1")
+        mvc.perform(patch("/api/v1/images/1")
             .contentType(MediaType.APPLICATION_JSON)
             .content(mapper.writeValueAsBytes(patchDTO))
         ).andExpect(status().is2xxSuccessful)
-        mvc.perform(patch("/images/2")
+        mvc.perform(patch("/api/v1/images/2")
             .contentType(MediaType.APPLICATION_JSON)
             .content(mapper.writeValueAsBytes(patchDTO))
         ).andExpect(status().is2xxSuccessful)
 
         val patchDTO2 = ImageUpdateDTO(id=null, name=null, mimeType=null, tags=listOf(tags[0]))
-        mvc.perform(patch("/images/1")
+        mvc.perform(patch("/api/v1/images/1")
             .contentType(MediaType.APPLICATION_JSON)
             .content(mapper.writeValueAsBytes(patchDTO2))
         ).andExpect(status().is2xxSuccessful)
-        mvc.perform(get("/images/1"))
+        mvc.perform(get("/api/v1/images/1"))
             .andExpect(status().is2xxSuccessful)
             .andExpect(jsonPath("$.tags[*].name", `is`(listOf("0"))))
-        mvc.perform(get("/images/2"))
+        mvc.perform(get("/api/v1/images/2"))
             .andExpect(status().is2xxSuccessful)
             .andExpect(jsonPath("$.tags[*].name", `is`(listOf("0", "1"))))
     }

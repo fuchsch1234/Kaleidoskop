@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.*
 import java.net.URI
 
 @RestController
-@RequestMapping("/tags")
+@RequestMapping("/api/v1/tags")
 class TagController (
     @Autowired val tagRepository: TagRepository
 ) {
