@@ -24,6 +24,7 @@ dependencies {
     implementation("no.tornado:tornadofx:1.7.17")
 
     testImplementation("org.junit.jupiter:junit-jupiter-api:${rootProject.extra["junitVersion"]}")
+    testImplementation("org.hamcrest:hamcrest:2.1")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:${rootProject.extra["junitVersion"]}")
 }
 
