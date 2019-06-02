@@ -2,16 +2,16 @@ package de.fuchsch.kaleidoskop.server.controller
 
 import de.fuchsch.kaleidoskop.server.model.Filter
 import de.fuchsch.kaleidoskop.server.model.ImageDAO
-import de.fuchsch.kaleidoskop.server.model.ImageUpdateDTO
+import de.fuchsch.kaleidoskop.server.model.TagDAO
 import de.fuchsch.kaleidoskop.server.repositories.ImageRepository
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.http.ResponseEntity.*
-import org.springframework.util.LinkedMultiValueMap
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.multipart.MultipartFile
+import java.lang.IndexOutOfBoundsException
 import java.net.URI
 import java.util.*
 import javax.activation.MimetypesFileTypeMap
@@ -52,10 +52,22 @@ class ImageController (
             ok(newImage)
         }.orElse(notFound().build())
 
-    @PatchMapping("/{id:[\\d]+}", produces=["application/json"])
-    fun patch(@PathVariable("id") image: Optional<ImageDAO>, @RequestBody changes: ImageUpdateDTO) =
+    @PostMapping("/{id:[\\d]+}/relationships/tags", produces=["application/json"])
+    fun addTag(@PathVariable("id") image: Optional<ImageDAO>, @RequestBody tag: TagDAO) =
         image.map {
-            val newImage = it.updateWith(changes)
+            val newImage = it.copy(tags=it.tags + tag)
+            imageRepository.save(newImage)
+            ok(newImage)
+        }.orElse(notFound().build())
+
+    @DeleteMapping("/{id:[\\d]+}/relationships/tags/{tagId:[\\d]+}")
+    fun removeTag(@PathVariable("id") image: Optional<ImageDAO>, @PathVariable("tagId") tagId: Long) =
+        image.map {
+            val newTags = it.tags.toMutableList()
+            try {
+                newTags.removeAt(tagId.toInt())
+            } catch (e: IndexOutOfBoundsException) { }
+            val newImage = it.copy(tags=newTags)
             imageRepository.save(newImage)
             ok(newImage)
         }.orElse(notFound().build())

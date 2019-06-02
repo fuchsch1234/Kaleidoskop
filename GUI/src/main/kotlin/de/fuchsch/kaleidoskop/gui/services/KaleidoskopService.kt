@@ -1,7 +1,6 @@
 package de.fuchsch.kaleidoskop.gui.services
 
 import de.fuchsch.kaleidoskop.gui.models.Image
-import de.fuchsch.kaleidoskop.gui.models.ImageUpdate
 import de.fuchsch.kaleidoskop.gui.models.Tag
 import kotlinx.coroutines.Deferred
 import okhttp3.MultipartBody
@@ -23,7 +22,10 @@ interface KaleidoskopService {
     @GET("/api/v1/images")
     fun getAllImagesAsync(): Deferred<Response<List<Image>>>
 
-    @PATCH("/api/v1/images/{id}")
-    fun updateImageAsync(@Path(value="id") id: Long, @Body update: ImageUpdate): Deferred<Response<Image>>
+    @POST("/api/v1/images/{id}/relationships/tags")
+    fun addTagAsync(@Path(value="id") id: Long, @Body tag: Tag): Deferred<Response<Image>>
+
+    @DELETE("/api/v1/images/{id}/relationships/tags/{tagId}")
+    fun removeTagAsync(@Path(value="id") id: Long, @Path(value="tagId") tagId: Long): Deferred<Response<Image>>
 
 }

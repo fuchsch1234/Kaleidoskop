@@ -52,12 +52,4 @@ data class ImageDAO (
         else -> false
     }
 
-    fun updateWith(update: ImageUpdateDTO): ImageDAO = ImageDAO(
-        id = update.id ?: this.id,
-        name = update.name ?: this.name,
-        mimeType = update.mimeType ?: this.mimeType,
-        tags = update.tags ?: this.tags,
-        data = this.data
-        )
-
 }
