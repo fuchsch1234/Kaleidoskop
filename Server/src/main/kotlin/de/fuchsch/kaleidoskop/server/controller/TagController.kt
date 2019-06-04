@@ -21,7 +21,7 @@ class TagController (
     }
 
     @GetMapping("", produces=["application/json"])
-    fun getAll() = tagRepository.findAll().map { ok(it) }
+    fun getAll() = ok(tagRepository.findAll())
 
     @GetMapping("/{id:[\\d]+}", produces=["application/json"])
     fun getById(@PathVariable id: Long) = tagRepository.findById(id).map { ok(it) }.orElse(notFound().build())
