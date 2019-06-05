@@ -12,8 +12,15 @@ class ImagesView : View() {
 
     override val root = datagrid(imagesViewModel.images) {
 
+        cellWidth = 300.0
+        cellHeight = cellWidth
+
         cellCache {
-            imageview(it.imageProperty)
+            imageview(it.imageProperty) {
+                isPreserveRatio = true
+                fitWidth = cellWidth - 20.0
+                fitHeight = cellHeight - 20.0
+            }
         }
 
         setOnDragOver { event ->

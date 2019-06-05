@@ -23,6 +23,9 @@ interface KaleidoskopService {
     @GET("/api/v1/images")
     fun getAllImagesAsync(): Deferred<Response<List<Image>>>
 
+    @GET("/api/v1/images/files/{id}")
+    fun getImageData(@Path(value="id") id: Long): Deferred<ResponseBody>
+
     @POST("/api/v1/images/{id}/relationships/tags")
     fun addTagAsync(@Path(value="id") id: Long, @Body tag: Tag): Deferred<Response<Image>>
 

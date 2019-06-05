@@ -31,7 +31,15 @@ class ImagesViewModel : ViewModel() {
         val allImages = kaleidoskopService.getAllImagesAsync().await()
         if (allImages.isSuccessful) {
             withContext(Dispatchers.Main) { images.addAll(allImages.body().orEmpty()) }
+            for (image in images) {
+                launch { loadImageData(image) }
+            }
         }
+    }
+
+    private suspend fun loadImageData(image: Image) = coroutineScope {
+        val response = kaleidoskopService.getImageData(image.id).await()
+        image.image = javafx.scene.image.Image(response.byteStream())
     }
 
     private suspend fun uploadImage(file: File) = coroutineScope {
@@ -39,10 +47,9 @@ class ImagesViewModel : ViewModel() {
         val body = MultipartBody.Part.createFormData("file", file.name, requestFile)
         val response = kaleidoskopService.uploadImageAsync(body).await()
         if (response.isSuccessful) {
-            val image = response.body()
-            if (image != null) {
-                withContext(Dispatchers.Main) { images.add(image) }
-            }
+            val image = Image(0, "0")
+            image.image = javafx.scene.image.Image(file.inputStream())
+            withContext(Dispatchers.Main) { images.add(image) }
         }
     }
 
