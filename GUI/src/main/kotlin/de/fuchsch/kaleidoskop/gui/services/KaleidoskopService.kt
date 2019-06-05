@@ -4,6 +4,7 @@ import de.fuchsch.kaleidoskop.gui.models.Image
 import de.fuchsch.kaleidoskop.gui.models.Tag
 import kotlinx.coroutines.Deferred
 import okhttp3.MultipartBody
+import okhttp3.ResponseBody
 import retrofit2.Response
 import retrofit2.http.*
 
@@ -17,7 +18,7 @@ interface KaleidoskopService {
 
     @POST("/api/v1/images")
     @Multipart
-    fun uploadImageAsync(@Part file: MultipartBody.Part): Deferred<Response<Image>>
+    fun uploadImageAsync(@Part file: MultipartBody.Part): Deferred<Response<Unit>>
 
     @GET("/api/v1/images")
     fun getAllImagesAsync(): Deferred<Response<List<Image>>>
