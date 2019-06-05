@@ -18,16 +18,12 @@ class ImagesViewModel : ViewModel() {
     private val kaleidoskopService = KaleidoskopServiceFactory.buildKaleidoskopService("http://localhost:8080")
 
     init {
-        GlobalScope.async {
-            loadAllImages()
-        }
+        GlobalScope.launch { loadAllImages() }
     }
 
     fun upload(files: List<File>) {
-        GlobalScope.async {
-            for (file in files) {
-                uploadImage(file)
-            }
+        for (file in files) {
+            GlobalScope.launch { uploadImage(file) }
         }
     }
 
