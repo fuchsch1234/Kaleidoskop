@@ -22,12 +22,8 @@ class TagsViewModel : ViewModel() {
     private suspend fun loadAllTags() = coroutineScope {
             val call = kaleidoskopService.getAllTagsAsync()
             val allTags = call.await()
-            println("Received tags")
             if (allTags.isSuccessful) {
-                println("Adding tags")
                 withContext(Dispatchers.Main) { tags.addAll(allTags.body().orEmpty()) }
-            } else {
-                println("Error getting tags ${allTags.errorBody()}")
             }
     }
 
