@@ -3,9 +3,7 @@ package de.fuchsch.kaleidoskop.gui.viewmodels
 import de.fuchsch.kaleidoskop.gui.factories.KaleidoskopServiceFactory
 import de.fuchsch.kaleidoskop.gui.models.Image
 import javafx.beans.property.SimpleListProperty
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.async
-import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.*
 import okhttp3.MediaType
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
@@ -36,7 +34,7 @@ class ImagesViewModel : ViewModel() {
     private suspend fun loadAllImages() = coroutineScope {
         val allImages = kaleidoskopService.getAllImagesAsync().await()
         if (allImages.isSuccessful) {
-            images.addAll(allImages.body().orEmpty())
+            withContext(Dispatchers.Main) { images.addAll(allImages.body().orEmpty()) }
         }
     }
 
@@ -47,7 +45,7 @@ class ImagesViewModel : ViewModel() {
         if (response.isSuccessful) {
             val image = response.body()
             if (image != null) {
-                images.add(image)
+                withContext(Dispatchers.Main) { images.add(image) }
             }
         }
     }
