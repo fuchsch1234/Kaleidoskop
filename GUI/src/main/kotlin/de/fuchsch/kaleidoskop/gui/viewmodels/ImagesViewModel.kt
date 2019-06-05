@@ -6,12 +6,16 @@ import javafx.beans.property.SimpleListProperty
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
+import okhttp3.MediaType
+import okhttp3.MultipartBody
+import okhttp3.RequestBody
 import tornadofx.ViewModel
 import tornadofx.observable
+import java.io.File
 
 class ImagesViewModel : ViewModel() {
 
-    val images = SimpleListProperty<Image>(this, "tags", mutableListOf<Image>().observable())
+    val images = SimpleListProperty<Image>(this, "images", mutableListOf<Image>().observable())
 
     private val kaleidoskopService = KaleidoskopServiceFactory.buildKaleidoskopService("http://localhost:8080")
 
@@ -21,10 +25,30 @@ class ImagesViewModel : ViewModel() {
         }
     }
 
+    fun upload(files: List<File>) {
+        GlobalScope.async {
+            for (file in files) {
+                uploadImage(file)
+            }
+        }
+    }
+
     private suspend fun loadAllImages() = coroutineScope {
         val allImages = kaleidoskopService.getAllImagesAsync().await()
         if (allImages.isSuccessful) {
             images.addAll(allImages.body().orEmpty())
+        }
+    }
+
+    private suspend fun uploadImage(file: File) = coroutineScope {
+        val requestFile = RequestBody.create(MediaType.parse("multipart/form"), file.readBytes())
+        val body = MultipartBody.Part.createFormData("file", file.name, requestFile)
+        val response = kaleidoskopService.uploadImageAsync(body).await()
+        if (response.isSuccessful) {
+            val image = response.body()
+            if (image != null) {
+                images.add(image)
+            }
         }
     }
 
