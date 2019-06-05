@@ -23,7 +23,7 @@ class ImageController (
 ) {
 
     @GetMapping("", produces=["application/json"])
-    fun getAll() = imageRepository.findAll().map { ok(it) }
+    fun getAll() = ok(imageRepository.findAll())
 
     @GetMapping("/{id:[\\d]+}", produces=["application/json"])
     fun getById(@PathVariable("id") image: Optional<ImageDAO>) = image.map { ok(it) }.orElse(notFound().build())
