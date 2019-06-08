@@ -20,11 +20,21 @@ class TagsViewModel : ViewModel() {
     }
 
     private suspend fun loadAllTags() = coroutineScope {
-            val call = kaleidoskopService.getAllTagsAsync()
-            val allTags = call.await()
-            if (allTags.isSuccessful) {
-                withContext(Dispatchers.Main) { tags.addAll(allTags.body().orEmpty()) }
+        val call = kaleidoskopService.getAllTagsAsync()
+        val allTags = call.await()
+        if (allTags.isSuccessful) {
+            withContext(Dispatchers.Main) { tags.addAll(allTags.body().orEmpty()) }
+        }
+    }
+
+    fun createTag(tagName: String) {
+        GlobalScope.launch(Dispatchers.IO) {
+            val tag = Tag(0, tagName)
+            val response = kaleidoskopService.createTagAsync(tag).await()
+            if (response.isSuccessful) {
+                withContext(Dispatchers.Main) { tags.add(tag) }
             }
+        }
     }
 
 }

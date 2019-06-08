@@ -14,7 +14,7 @@ interface KaleidoskopService {
     fun getAllTagsAsync(): Deferred<Response<List<Tag>>>
 
     @POST("/api/v1/tags")
-    fun createTagAsync(@Body tag: Tag): Deferred<Response<Tag>>
+    fun createTagAsync(@Body tag: Tag): Deferred<Response<Unit>>
 
     @POST("/api/v1/images")
     @Multipart
