@@ -17,7 +17,7 @@ class TagController (
     @PostMapping("", produces=["application/json"])
     fun create(@RequestBody tag: TagDAO): ResponseEntity<Unit> {
         tagRepository.save(tag)
-        return created(URI("/tags/${tag.id}")).build()
+        return created(URI("/api/v1/tags/${tag.id}")).build()
     }
 
     @GetMapping("", produces=["application/json"])
