@@ -20,11 +20,17 @@ interface KaleidoskopService {
     @Multipart
     fun uploadImageAsync(@Part file: MultipartBody.Part): Deferred<Response<Unit>>
 
+    @GET("{url}")
+    fun getImageAsync(@Path(value="url", encoded=true) url: String): Deferred<Response<Image>>
+
     @GET("/api/v1/images")
     fun getAllImagesAsync(): Deferred<Response<List<Image>>>
 
     @GET("/api/v1/images/files/{id}")
     fun getImageData(@Path(value="id") id: Long): Deferred<ResponseBody>
+
+    @GET("{url}")
+    fun getTagAsync(@Path(value="url", encoded=true) url: String): Deferred<Response<Tag>>
 
     @POST("/api/v1/images/{id}/relationships/tags")
     fun addTagAsync(@Path(value="id") id: Long, @Body tag: Tag): Deferred<Response<Image>>

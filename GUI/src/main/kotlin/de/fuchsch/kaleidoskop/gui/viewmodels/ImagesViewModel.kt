@@ -47,9 +47,13 @@ class ImagesViewModel : ViewModel() {
         val body = MultipartBody.Part.createFormData("file", file.name, requestFile)
         val response = kaleidoskopService.uploadImageAsync(body).await()
         if (response.isSuccessful) {
-            val image = Image(0, "0")
-            image.image = javafx.scene.image.Image(file.inputStream())
-            withContext(Dispatchers.Main) { images.add(image) }
+            val location = response.headers()["Location"]
+            if (location != null) {
+                kaleidoskopService.getImageAsync(location).await().body()?.let { image ->
+                    async { loadImageData(image) }
+                    withContext(Dispatchers.Main) { images.add(image) }
+                }
+            }
         }
     }
 

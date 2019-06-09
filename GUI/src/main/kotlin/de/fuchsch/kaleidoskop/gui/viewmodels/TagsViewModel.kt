@@ -32,7 +32,12 @@ class TagsViewModel : ViewModel() {
             val tag = Tag(0, tagName)
             val response = kaleidoskopService.createTagAsync(tag).await()
             if (response.isSuccessful) {
-                withContext(Dispatchers.Main) { tags.add(tag) }
+                val location = response.headers()["Location"]
+                if (location != null) {
+                    kaleidoskopService.getTagAsync(location).await().body()?.let { tag ->
+                        withContext(Dispatchers.Main) { tags.add(tag) }
+                    }
+                }
             }
         }
     }
