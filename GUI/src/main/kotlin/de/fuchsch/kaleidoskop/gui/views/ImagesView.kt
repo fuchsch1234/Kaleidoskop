@@ -1,5 +1,6 @@
 package de.fuchsch.kaleidoskop.gui.views
 
+import de.fuchsch.kaleidoskop.gui.viewmodels.SelectedImageViewModel
 import de.fuchsch.kaleidoskop.gui.viewmodels.ImagesViewModel
 import javafx.scene.input.TransferMode
 import tornadofx.View
@@ -9,6 +10,8 @@ import tornadofx.imageview
 class ImagesView : View() {
 
     private val imagesViewModel: ImagesViewModel by inject()
+
+    private val selectedImageViewModel: SelectedImageViewModel by inject()
 
     override val root = datagrid(imagesViewModel.images) {
 
@@ -21,6 +24,11 @@ class ImagesView : View() {
                 fitWidth = cellWidth - 20.0
                 fitHeight = cellHeight - 20.0
             }
+        }
+
+        onUserSelect {
+            selectedImageViewModel.selectedImage.set(it)
+            find<SingleImageView>().openModal()
         }
 
         setOnDragOver { event ->
