@@ -1,11 +1,14 @@
 package de.fuchsch.kaleidoskop.gui.viewmodels
 
+import com.github.thomasnield.rxkotlinfx.observeOnFx
 import de.fuchsch.kaleidoskop.gui.factories.KaleidoskopServiceFactory
 import de.fuchsch.kaleidoskop.gui.models.Tag
+import io.reactivex.Single
+import io.reactivex.schedulers.Schedulers
 import javafx.beans.property.SimpleListProperty
-import kotlinx.coroutines.*
 import tornadofx.ViewModel
 import tornadofx.observable
+import java.lang.Exception
 
 class TagsViewModel : ViewModel() {
 
@@ -14,32 +17,23 @@ class TagsViewModel : ViewModel() {
     private val kaleidoskopService = KaleidoskopServiceFactory.buildKaleidoskopService("http://localhost:8080")
 
     init {
-        GlobalScope.launch(Dispatchers.IO) {
-            launch { loadAllTags() }
-        }
+        loadAllTags()
     }
 
-    private suspend fun loadAllTags() = coroutineScope {
-        val call = kaleidoskopService.getAllTagsAsync()
-        val allTags = call.await()
-        if (allTags.isSuccessful) {
-            withContext(Dispatchers.Main) { tags.addAll(allTags.body().orEmpty()) }
-        }
-    }
+    private fun loadAllTags() =
+        kaleidoskopService.getAllTags()
+            .subscribeOn(Schedulers.io())
+            .observeOnFx()
+            .subscribe { tags.addAll(it) }
 
-    fun createTag(tagName: String) {
-        GlobalScope.launch(Dispatchers.IO) {
-            val tag = Tag(0, tagName)
-            val response = kaleidoskopService.createTagAsync(tag).await()
-            if (response.isSuccessful) {
-                val location = response.headers()["Location"]
-                if (location != null) {
-                    kaleidoskopService.getTagAsync(location).await().body()?.let { tag ->
-                        withContext(Dispatchers.Main) { tags.add(tag) }
-                    }
+    fun createTag(tagName: String) =
+        kaleidoskopService.createTag(Tag(0, tagName))
+            .subscribeOn(Schedulers.io())
+            .flatMap {
+                val location = it.headers()["Location"]
+                    kaleidoskopService.getTag(location ?: "")
                 }
-            }
-        }
-    }
+            .observeOnFx()
+            .subscribe { tags.add(it) }
 
 }

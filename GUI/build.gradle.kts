@@ -13,15 +13,14 @@ dependencies {
     implementation(kotlin("stdlib-jdk8"))
     implementation(kotlin("reflect"))
 
-    val coroutineVersion = "1.2.1"
     val retrofitVersion = "2.5.0"
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutineVersion")
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-javafx:$coroutineVersion")
     implementation("com.squareup.retrofit2:retrofit:$retrofitVersion")
     implementation("com.squareup.retrofit2:converter-jackson:$retrofitVersion")
+    implementation("com.squareup.retrofit2:adapter-rxjava2:$retrofitVersion")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.9.7")
-    implementation("com.jakewharton.retrofit:retrofit2-kotlin-coroutines-adapter:0.9.2")
     implementation("no.tornado:tornadofx:1.7.17")
+    implementation("io.reactivex.rxjava2:rxjava:2.0.4")
+    implementation("com.github.thomasnield:rxkotlinfx:2.2.2")
 
     testImplementation("org.junit.jupiter:junit-jupiter-api:${rootProject.extra["junitVersion"]}")
     testImplementation("org.hamcrest:hamcrest:2.1")
