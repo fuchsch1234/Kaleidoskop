@@ -1,6 +1,8 @@
 package de.fuchsch.kaleidoskop.gui.views
 
+import de.fuchsch.kaleidoskop.gui.models.Tag
 import de.fuchsch.kaleidoskop.gui.viewmodels.SelectedImageViewModel
+import javafx.collections.ObservableList
 import tornadofx.*
 
 class SingleImageView: Fragment() {
@@ -9,9 +11,22 @@ class SingleImageView: Fragment() {
 
     override val root = hbox {
 
-        listview(selectedImageViewModel.tags.value) {
-            cellCache {
-                label(it.nameProperty)
+        vbox {
+            listview(selectedImageViewModel.tags as ObservableList<Tag>) {
+                cellCache {
+                    label(it.nameProperty)
+                }
+            }
+
+            listview(selectedImageViewModel.possibleTags as ObservableList<Tag>) {
+                cellCache {
+                    hbox {
+                        label(it.nameProperty)
+                        hyperlink("+") {
+                            action { selectedImageViewModel.tags.add(it) }
+                        }
+                    }
+                }
             }
         }
 
