@@ -16,11 +16,15 @@ class Kaleidoskop: App(MainView::class) {
 
     private val kaleidoskopModule = module {
         single { Repository(get()) }
-        single { KaleidoskopServiceFactory.buildKaleidoskopService("http://localhost:8080") }
+        single { KaleidoskopServiceFactory.buildKaleidoskopService(getProperty("server_url")) }
     }
 
     override fun start(stage: Stage) {
-        startKoin { modules(kaleidoskopModule) }
+        startKoin {
+            fileProperties("/kaleidoskop.properties")
+            environmentProperties()
+            modules(kaleidoskopModule)
+        }
         FX.dicontainer = object: DIContainer, KoinComponent {
             override fun <T : Any> getInstance(type: KClass<T>): T = getKoin().get(type, null, null)
         }
