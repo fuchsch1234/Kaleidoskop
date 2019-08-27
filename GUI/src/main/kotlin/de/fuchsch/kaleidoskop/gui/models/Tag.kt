@@ -15,4 +15,11 @@ class Tag(id: Long, name: String, images: List<Image> = emptyList()) {
     @JsonIgnore
     val imagesProperty = SimpleListProperty<Image>(images.observable())
     val images by imagesProperty
+
+    override fun equals(other: Any?): Boolean =
+        when {
+            other === this -> true
+            other is Tag -> other.id == this.id
+            else -> false
+        }
 }
