@@ -1,12 +1,15 @@
 package de.fuchsch.kaleidoskop.gui.views
 
+import de.fuchsch.kaleidoskop.gui.viewmodels.ImagesViewModel
 import de.fuchsch.kaleidoskop.gui.viewmodels.TagsViewModel
 import javafx.stage.StageStyle
 import tornadofx.*
 
 class TagsView : View() {
 
-    val tagsViewModel: TagsViewModel by inject()
+    private val tagsViewModel: TagsViewModel by inject()
+
+    private val imagesViewModel: ImagesViewModel by inject()
 
     override val root = vbox {
 
@@ -18,7 +21,9 @@ class TagsView : View() {
             cellCache {
                 hbox {
                     label(it.nameProperty)
-                    button("+")
+                    hyperlink("+").action {
+                        imagesViewModel.filters.add(it)
+                    }
                 }
             }
         }
