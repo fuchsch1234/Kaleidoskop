@@ -23,7 +23,7 @@ class SingleImageView: Fragment() {
                     hbox {
                         label(it.nameProperty)
                         hyperlink("+") {
-                            action { selectedImageViewModel.tags.add(it) }
+                            action { selectedImageViewModel.addTag(it) }
                         }
                     }
                 }

@@ -84,4 +84,11 @@ class Repository(
             }
     }
 
+    fun addTag(image: Image, tag: Tag) {
+        kaleidoskopService.addTag(image.id, tag)
+            .subscribeOn(Schedulers.io())
+            .observeOnFx()
+            .subscribe { image.tags.add(tag) }
+    }
+
 }

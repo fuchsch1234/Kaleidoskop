@@ -2,6 +2,7 @@ package de.fuchsch.kaleidoskop.gui.viewmodels
 
 import de.fuchsch.kaleidoskop.gui.ext.subtract
 import de.fuchsch.kaleidoskop.gui.models.Image
+import de.fuchsch.kaleidoskop.gui.models.Repository
 import de.fuchsch.kaleidoskop.gui.models.Tag
 import javafx.beans.binding.Bindings
 import javafx.beans.binding.ListBinding
@@ -12,6 +13,8 @@ import tornadofx.ItemViewModel
 import tornadofx.observable
 
 class SelectedImageViewModel: ItemViewModel<Image>() {
+
+    private val repository: Repository by di()
 
     val selectedImage = SimpleObjectProperty<Image?>(this, "selectedImage", null)
 
@@ -29,5 +32,7 @@ class SelectedImageViewModel: ItemViewModel<Image>() {
     private val tagsViewModel: TagsViewModel by inject()
 
     val possibleTags = tagsViewModel.tags.subtract(tags).sorted { o1, o2 -> o1.name.compareTo(o2.name) }
+
+    fun addTag(tag: Tag) = selectedImage.get()?.let { image -> repository.addTag(image, tag) }
 
 }
