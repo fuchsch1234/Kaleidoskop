@@ -9,13 +9,14 @@ import tornadofx.observable
 
 class TagsViewModel : ViewModel() {
 
-    val tags = SimpleListProperty<Tag>(this, "tags", mutableListOf<Tag>().observable())
-        .sorted { o1, o2 -> o1.name.compareTo(o2.name) }
+    private val tagsProperty = SimpleListProperty<Tag>(this, "tags", mutableListOf<Tag>().observable())
+
+    val tags = tagsProperty.sorted { o1, o2 -> o1.name.compareTo(o2.name) }
 
     private val repository: Repository by di()
 
     init {
-        repository.getTags().observeOnFx().subscribe { tags.add(it) }
+        repository.getTags().observeOnFx().subscribe { tagsProperty.add(it) }
     }
 
     fun createTag(tagName: String) = repository.createTag(tagName)
