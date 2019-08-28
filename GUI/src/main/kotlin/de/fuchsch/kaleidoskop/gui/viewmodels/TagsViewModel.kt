@@ -10,6 +10,7 @@ import tornadofx.observable
 class TagsViewModel : ViewModel() {
 
     val tags = SimpleListProperty<Tag>(this, "tags", mutableListOf<Tag>().observable())
+        .sorted { o1, o2 -> o1.name.compareTo(o2.name) }
 
     private val repository: Repository by di()
 

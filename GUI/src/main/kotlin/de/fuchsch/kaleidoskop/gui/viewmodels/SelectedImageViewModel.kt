@@ -28,6 +28,6 @@ class SelectedImageViewModel: ItemViewModel<Image>() {
 
     private val tagsViewModel: TagsViewModel by inject()
 
-    val possibleTags: ListBinding<Tag> = tagsViewModel.tags.subtract(tags)
+    val possibleTags = tagsViewModel.tags.subtract(tags).sorted { o1, o2 -> o1.name.compareTo(o2.name) }
 
 }
