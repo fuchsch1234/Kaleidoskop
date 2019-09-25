@@ -1,23 +1,34 @@
 package de.fuchsch.kaleidoskop.gui.services
 
 import de.fuchsch.kaleidoskop.gui.models.Tag
+import javafx.scene.image.Image
 import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.Matchers.*
 import org.hamcrest.io.FileMatchers.anExistingDirectory
 import org.junit.jupiter.api.*
+import java.awt.image.BufferedImage
 import java.io.File
+import javax.imageio.ImageIO
 
 class LocalKaleidoskopServiceTest {
 
     private val baseDir = createTempDir()
 
-    private val service = LocalKaleidoskopService(baseDir.absolutePath)
+    // Instantiate service lazily to ensure the services parses the directory only after setUp completed.
+    private val service : LocalKaleidoskopService by lazy { LocalKaleidoskopService(baseDir.absolutePath) }
 
     @BeforeEach
     fun setUp() {
+        // Create tag directories
         File(baseDir, "1_test").mkdirs()
         File(baseDir, "2_foo").mkdirs()
         File(baseDir, "3_bar").mkdirs()
+        // Create mock files
+        File(baseDir, "data").mkdirs()
+        val image = BufferedImage(100, 100, BufferedImage.TYPE_INT_RGB)
+        ImageIO.write(image, "jpg", File(baseDir, "data/1_1.jpg"))
+        ImageIO.write(image, "jpg", File(baseDir, "data/2_2.jpg"))
+        ImageIO.write(image, "jpg", File(baseDir, "data/3_3.jpg"))
     }
 
     @AfterEach
@@ -53,6 +64,17 @@ class LocalKaleidoskopServiceTest {
         assertThat(newTags, hasSize(2))
         // The tags have different ids
         assertThat(newTags[0].id, not(equalTo(newTags[1].id)))
+    }
+
+    @Test
+    fun `getAllImages returns all images`() {
+        val images = service.getAllImages().blockingSingle()
+        assertThat(images, hasSize(3))
+        assertThat(images, hasItems(
+            hasProperty("name", equalTo("1.jpg")),
+            hasProperty("name", equalTo("2.jpg")),
+            hasProperty("name", equalTo("3.jpg"))
+        ))
     }
 
 }
