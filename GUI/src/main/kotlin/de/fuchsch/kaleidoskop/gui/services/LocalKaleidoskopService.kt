@@ -5,10 +5,15 @@ import de.fuchsch.kaleidoskop.gui.models.Tag
 import io.reactivex.Observable
 import java.io.File
 import java.lang.RuntimeException
+import java.nio.file.Files
+import java.nio.file.Paths
+import java.util.concurrent.atomic.AtomicLong
 
 class LocalKaleidoskopService(private val basePath: String): KaleidoskopService {
 
     private val TAG_REGEX = Regex("""(\d+)_(.*)""")
+
+    private val nextTagId = AtomicLong(0)
 
     override fun getAllTags(): Observable<List<Tag>> =
         Observable.just(
@@ -22,8 +27,15 @@ class LocalKaleidoskopService(private val basePath: String): KaleidoskopService 
                 }.toList()
         )
 
+    private fun findNextFreeId(): Long {
+        while (Files.newDirectoryStream(Paths.get(basePath), "${nextTagId.addAndGet(1)}_*").count() > 0) { }
+        return nextTagId.get()
+    }
+
     override fun createTag(tag: Tag): Observable<Tag> {
-        throw NotImplementedError("Missing")
+        val tag = Tag(id=findNextFreeId(), name=tag.name)
+        File(basePath, "${tag.id}_${tag.name}").mkdirs()
+        return Observable.just(tag)
     }
 
     override fun createImage(image: Image): Observable<Image> {
