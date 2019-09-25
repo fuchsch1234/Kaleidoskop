@@ -22,6 +22,7 @@ dependencies {
     implementation("no.tornado:tornadofx:1.7.17")
     implementation("io.reactivex.rxjava2:rxjava:2.0.4")
     implementation("com.github.thomasnield:rxkotlinfx:2.2.2")
+    implementation("io.reactivex.rxjava2:rxkotlin:2.4.0")
     implementation("org.koin:koin-core:$koinVersion")
 
     testImplementation("org.junit.jupiter:junit-jupiter-api:${rootProject.extra["junitVersion"]}")
