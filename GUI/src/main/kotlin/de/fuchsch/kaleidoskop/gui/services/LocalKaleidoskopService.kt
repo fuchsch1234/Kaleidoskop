@@ -42,10 +42,6 @@ class LocalKaleidoskopService(private val basePath: String): KaleidoskopService 
         throw NotImplementedError("Missing")
     }
 
-    override fun getImage(url: String): Observable<Image> {
-        throw NotImplementedError("Missing")
-    }
-
     override fun getAllImages(): Observable<List<Image>> {
         throw NotImplementedError("Missing")
     }

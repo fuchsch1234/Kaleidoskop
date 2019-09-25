@@ -12,8 +12,6 @@ interface KaleidoskopService {
 
     fun createImage(image: Image): Observable<Image>
 
-    fun getImage(url: String): Observable<Image>
-
     fun getAllImages(): Observable<List<Image>>
 
     fun addTag(image: Image, tag: Tag): Observable<Image>
