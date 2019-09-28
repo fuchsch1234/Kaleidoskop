@@ -5,7 +5,6 @@ import de.fuchsch.kaleidoskop.gui.models.Tag
 import io.reactivex.Observable
 import javafx.embed.swing.SwingFXUtils
 import java.io.File
-import java.lang.RuntimeException
 import java.nio.file.Files
 import java.nio.file.Paths
 import java.util.concurrent.atomic.AtomicLong
@@ -19,31 +18,40 @@ class LocalKaleidoskopService(private val basePath: String): KaleidoskopService 
 
     private val nextTagId = AtomicLong(0)
 
-    private val images = mutableListOf<Image>()
+    private val images = mutableMapOf<Long, Image>()
 
-    private val tags = mutableListOf<Tag>()
+    private val tags = mutableMapOf<Long, Tag>()
 
     init {
-        tags.addAll(File(basePath).walk()
+        File(basePath).walk()
             .filter { it.isDirectory }
-            .filter { TAG_REGEX.matches(it.name) }
-            .map { file ->
+            .forEach { file ->
                 TAG_REGEX.find(file.name)?.let {
-                    Tag(it.groupValues[1].toLong(), it.groupValues[2])
-                } ?: throw RuntimeException("Found tag folder not matching the expected naming convention")
-            })
-        images.addAll(File(basePath, "data").walk()
+                    val id = it.groupValues[1].toLong()
+                    tags[id] = Tag(id, it.groupValues[2])
+                }
+            }
+        File(basePath, "data").walk()
             .filter { it.isFile }
-            .map { file ->
+            .forEach { file ->
                 IMAGE_REGEX.find(file.name)?.let {
-                    val image = Image(it.groupValues[1].toLong(), it.groupValues[2])
+                    val id = it.groupValues[1].toLong()
+                    val image = Image(id, it.groupValues[2])
                     image.image = SwingFXUtils.toFXImage(ImageIO.read(file), null)
-                    image
-                } ?: throw RuntimeException("Found file not matching the expecting image naming convention in data folder")
-            })
+                    images[id] = image
+                }
+            }
+        tags.forEach { (_, tag) ->
+            File(basePath, "${tag.id}_${tag.name}").walk()
+                .filterNot { it.isDirectory }
+                .forEach { file ->
+                    val id = file.name.toLong()
+                    images[id]?.tags?.add(tag)
+                }
+        }
     }
 
-    override fun getAllTags(): Observable<List<Tag>> = Observable.just(tags)
+    override fun getAllTags(): Observable<List<Tag>> = Observable.just(tags.values.toList())
 
     private fun findNextFreeTagId(): Long {
         while (Files.newDirectoryStream(Paths.get(basePath), "${nextTagId.addAndGet(1)}_*").count() > 0) { }
@@ -53,7 +61,7 @@ class LocalKaleidoskopService(private val basePath: String): KaleidoskopService 
     override fun createTag(tag: Tag): Observable<Tag> {
         val tag = Tag(id=findNextFreeTagId(), name=tag.name)
         File(basePath, "${tag.id}_${tag.name}").mkdirs()
-        tags.add(tag)
+        tags[tag.id] = tag
         return Observable.just(tag)
     }
 
@@ -61,7 +69,7 @@ class LocalKaleidoskopService(private val basePath: String): KaleidoskopService 
         throw NotImplementedError("Missing")
     }
 
-    override fun getAllImages(): Observable<List<Image>> = Observable.just(images)
+    override fun getAllImages(): Observable<List<Image>> = Observable.just(images.values.toList())
 
     override fun addTag(image: Image, tag: Tag): Observable<Image> {
         throw NotImplementedError("Missing")

@@ -8,6 +8,8 @@ import org.hamcrest.io.FileMatchers.anExistingDirectory
 import org.junit.jupiter.api.*
 import java.awt.image.BufferedImage
 import java.io.File
+import java.nio.file.Files
+import java.nio.file.Files.createSymbolicLink
 import javax.imageio.ImageIO
 
 class LocalKaleidoskopServiceTest {
@@ -29,6 +31,8 @@ class LocalKaleidoskopServiceTest {
         ImageIO.write(image, "jpg", File(baseDir, "data/1_1.jpg"))
         ImageIO.write(image, "jpg", File(baseDir, "data/2_2.jpg"))
         ImageIO.write(image, "jpg", File(baseDir, "data/3_3.jpg"))
+        // Create tag symlinks
+        createSymbolicLink(File(baseDir, "1_test/1").toPath(), File(baseDir, "data/1_1.jpg").toPath())
     }
 
     @AfterEach
@@ -75,6 +79,14 @@ class LocalKaleidoskopServiceTest {
             hasProperty("name", equalTo("2.jpg")),
             hasProperty("name", equalTo("3.jpg"))
         ))
+    }
+
+    @Test
+    fun `images have correct tags`() {
+        val images = service.getAllImages().blockingSingle()
+        val image = images.first { it.id == 1L }
+        assertThat(image.tags, hasSize(1))
+        assertThat(image.tags, hasItem<Tag>(hasProperty("name", equalTo("test"))))
     }
 
 }

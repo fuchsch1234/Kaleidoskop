@@ -7,7 +7,7 @@ import javafx.beans.property.SimpleObjectProperty
 import javafx.beans.property.SimpleStringProperty
 import javafx.scene.image.Image
 
-class Image(id: Long, name: String, tags: List<Tag> = emptyList()) {
+class Image(id: Long, name: String, tags: MutableList<Tag> = mutableListOf()) {
     var id = id
 
     @JsonIgnore
