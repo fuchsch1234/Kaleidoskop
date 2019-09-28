@@ -5,6 +5,7 @@ import de.fuchsch.kaleidoskop.gui.models.Tag
 import io.reactivex.Observable
 import javafx.embed.swing.SwingFXUtils
 import java.io.File
+import java.lang.RuntimeException
 import java.nio.file.Files
 import java.nio.file.Paths
 import java.util.concurrent.atomic.AtomicLong
@@ -71,9 +72,17 @@ class LocalKaleidoskopService(private val basePath: String): KaleidoskopService 
 
     override fun getAllImages(): Observable<List<Image>> = Observable.just(images.values.toList())
 
-    override fun addTag(image: Image, tag: Tag): Observable<Image> {
-        throw NotImplementedError("Missing")
-    }
+    override fun addTag(image: Image, tag: Tag): Observable<Image> =
+        images[image.id]?.let {
+            // Do not add the same tag twice
+            if (!it.tags.contains(tag)) {
+                it.tags.add(tag)
+                Files.createSymbolicLink(
+                    File(basePath, "${tag.id}_${tag.name}/${it.id}").toPath(),
+                    File(basePath, "data/${it.id}_${it.name}").toPath())
+            }
+            Observable.just(it)
+        } ?: throw RuntimeException("Unknown image")
 
     override fun removeTag(image: Image, tag: Tag): Observable<Image> {
         throw NotImplementedError("Missing")

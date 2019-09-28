@@ -87,4 +87,30 @@ class LocalKaleidoskopServiceTest {
         assertThat(image.tags, hasItem<Tag>(hasProperty("name", equalTo("test"))))
     }
 
+    @Test
+    fun `addTag adds a single tag to an image`() {
+        val images = service.getAllImages().blockingSingle()
+        val image = images.first { it.id == 2L }
+        assertThat(image.tags, empty())
+        val tag = service.getAllTags().blockingSingle().last()
+        val imageWithTag = service.addTag(image, tag).blockingSingle()
+
+        assertThat(imageWithTag.tags, hasSize(1))
+        assertThat(imageWithTag.tags, hasItem(tag))
+    }
+
+    @Test
+    fun `added tags are persisted`() {
+        val image = service.getAllImages().blockingSingle().first { it.id == 2L }
+        assertThat(image.tags, empty())
+        val tag = service.getAllTags().blockingSingle().last()
+        service.addTag(image, tag).blockingSingle()
+
+        val newService = LocalKaleidoskopService(baseDir.absolutePath)
+        val imageWithTag = newService.getAllImages().blockingSingle().first { it.id == 2L}
+
+        assertThat(imageWithTag.tags, hasSize(1))
+        assertThat(imageWithTag.tags, hasItem(tag))
+    }
+
 }
