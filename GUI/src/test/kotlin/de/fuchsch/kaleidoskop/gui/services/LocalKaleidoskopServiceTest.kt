@@ -1,14 +1,12 @@
 package de.fuchsch.kaleidoskop.gui.services
 
 import de.fuchsch.kaleidoskop.gui.models.Tag
-import javafx.scene.image.Image
 import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.Matchers.*
 import org.hamcrest.io.FileMatchers.anExistingDirectory
 import org.junit.jupiter.api.*
 import java.awt.image.BufferedImage
 import java.io.File
-import java.nio.file.Files
 import java.nio.file.Files.createSymbolicLink
 import javax.imageio.ImageIO
 
