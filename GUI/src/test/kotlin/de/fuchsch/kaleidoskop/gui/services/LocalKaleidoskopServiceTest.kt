@@ -80,6 +80,53 @@ class LocalKaleidoskopServiceTest {
     }
 
     @Test
+    fun `a newly created image is returned from getAllImages`() {
+        val imageData = BufferedImage(100, 100, BufferedImage.TYPE_INT_RGB)
+        val imageFile = File(baseDir, "test.jpg")
+        ImageIO.write(imageData, "jpg", imageFile)
+        val oldImageList = service.getAllImages().blockingSingle()
+        val image = service.createImage(imageFile).blockingSingle()
+        val newImageList = service.getAllImages().blockingSingle()
+        assertThat(newImageList, hasSize(oldImageList.size + 1))
+        assertThat(newImageList, hasItem(image))
+    }
+
+    @Test
+    fun `a created image is persisted`() {
+        val imageData = BufferedImage(100, 100, BufferedImage.TYPE_INT_RGB)
+        val imageFile = File(baseDir, "test.jpg")
+        ImageIO.write(imageData, "jpg", imageFile)
+        val oldImageList = service.getAllImages().blockingSingle()
+        val image = service.createImage(imageFile).blockingSingle()
+
+        val newService = LocalKaleidoskopService(baseDir.absolutePath)
+        val newImageList = newService.getAllImages().blockingSingle()
+        assertThat(newImageList, hasSize(oldImageList.size + 1))
+        assertThat(newImageList, hasItem(hasProperty<String>("name", equalTo(image.name))))
+    }
+
+    @Test
+    fun `a created image has no tags`() {
+        val imageData = BufferedImage(100, 100, BufferedImage.TYPE_INT_RGB)
+        val imageFile = File(baseDir, "test.jpg")
+        ImageIO.write(imageData, "jpg", imageFile)
+        val image = service.createImage(imageFile).blockingSingle()
+
+        assertThat(image.tags, empty())
+    }
+
+    @Test
+    fun `each image has an unique id`() {
+        val imageData = BufferedImage(100, 100, BufferedImage.TYPE_INT_RGB)
+        val imageFile = File(baseDir, "test.jpg")
+        ImageIO.write(imageData, "jpg", imageFile)
+        val image1 = service.createImage(imageFile).blockingSingle()
+        val image2 = service.createImage(imageFile).blockingSingle()
+
+        assertThat(image1.id, not(equalTo(image2.id)))
+    }
+
+    @Test
     fun `images have correct tags`() {
         val images = service.getAllImages().blockingSingle()
         val image = images.first { it.id == 1L }

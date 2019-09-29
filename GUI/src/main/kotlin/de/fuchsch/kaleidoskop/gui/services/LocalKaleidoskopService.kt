@@ -19,6 +19,8 @@ class LocalKaleidoskopService(private val basePath: String): KaleidoskopService 
 
     private val nextTagId = AtomicLong(0)
 
+    private val nextImageId = AtomicLong(0)
+
     private val images = mutableMapOf<Long, Image>()
 
     private val tags = mutableMapOf<Long, Tag>()
@@ -59,6 +61,11 @@ class LocalKaleidoskopService(private val basePath: String): KaleidoskopService 
         return nextTagId.get()
     }
 
+    private fun findNextFreeImageId(): Long {
+        while (Files.newDirectoryStream(Paths.get(basePath, "data"), "${nextImageId.addAndGet(1)}_*").count() > 0) { }
+        return nextImageId.get()
+    }
+
     override fun createTag(tag: Tag): Observable<Tag> {
         val tag = Tag(id=findNextFreeTagId(), name=tag.name)
         File(basePath, "${tag.id}_${tag.name}").mkdirs()
@@ -66,8 +73,11 @@ class LocalKaleidoskopService(private val basePath: String): KaleidoskopService 
         return Observable.just(tag)
     }
 
-    override fun createImage(image: Image): Observable<Image> {
-        throw NotImplementedError("Missing")
+    override fun createImage(imageFile: File): Observable<Image> {
+        val image = Image(findNextFreeImageId(), imageFile.name)
+        File(basePath, "data/${image.id}_${image.name}").writeBytes(imageFile.readBytes())
+        images[image.id] = image
+        return Observable.just(image)
     }
 
     override fun getAllImages(): Observable<List<Image>> = Observable.just(images.values.toList())

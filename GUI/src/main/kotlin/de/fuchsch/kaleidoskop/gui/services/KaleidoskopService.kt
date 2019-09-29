@@ -3,6 +3,7 @@ package de.fuchsch.kaleidoskop.gui.services
 import de.fuchsch.kaleidoskop.gui.models.Image
 import de.fuchsch.kaleidoskop.gui.models.Tag
 import io.reactivex.Observable
+import java.io.File
 
 interface KaleidoskopService {
 
@@ -10,7 +11,7 @@ interface KaleidoskopService {
 
     fun createTag(tag: Tag): Observable<Tag>
 
-    fun createImage(image: Image): Observable<Image>
+    fun createImage(imageFile: File): Observable<Image>
 
     fun getAllImages(): Observable<List<Image>>
 

@@ -51,9 +51,7 @@ class Repository(
     }
 
     fun uploadImage(file: File): Observable<Image> {
-        val im = Image(0, file.name)
-        im.image = javafx.scene.image.Image(file.readBytes().inputStream())
-        return kaleidoskopService.createImage(im)
+        return kaleidoskopService.createImage(file)
             .subscribeOn(Schedulers.io())
             .doOnNext {
                 images.add(it)
