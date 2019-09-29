@@ -75,7 +75,9 @@ class LocalKaleidoskopService(private val basePath: String): KaleidoskopService 
 
     override fun createImage(imageFile: File): Observable<Image> {
         val image = Image(findNextFreeImageId(), imageFile.name)
-        File(basePath, "data/${image.id}_${image.name}").writeBytes(imageFile.readBytes())
+        val file = File(basePath, "data/${image.id}_${image.name}")
+        file.writeBytes(imageFile.readBytes())
+        image.image = SwingFXUtils.toFXImage(ImageIO.read(file), null)
         images[image.id] = image
         return Observable.just(image)
     }
