@@ -2,6 +2,8 @@ package de.fuchsch.kaleidoskop.gui
 
 import de.fuchsch.kaleidoskop.gui.factories.KaleidoskopServiceFactory
 import de.fuchsch.kaleidoskop.gui.models.Repository
+import de.fuchsch.kaleidoskop.gui.services.KaleidoskopService
+import de.fuchsch.kaleidoskop.gui.services.LocalKaleidoskopService
 import de.fuchsch.kaleidoskop.gui.views.MainView
 import javafx.stage.Stage
 import org.koin.core.KoinComponent
@@ -16,7 +18,7 @@ class Kaleidoskop: App(MainView::class) {
 
     private val kaleidoskopModule = module {
         single { Repository(get()) }
-        single { KaleidoskopServiceFactory.buildKaleidoskopService(getProperty("server_url")) }
+        single { LocalKaleidoskopService(getProperty("image_directory")) as KaleidoskopService }
     }
 
     override fun start(stage: Stage) {
