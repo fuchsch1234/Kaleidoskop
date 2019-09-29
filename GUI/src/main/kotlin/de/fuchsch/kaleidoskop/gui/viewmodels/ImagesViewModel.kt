@@ -24,7 +24,7 @@ class ImagesViewModel : ViewModel() {
         filters.changes()
             .switchMap {
                 images.clear()
-                repository.filteredImages()
+                repository.filteredImages(filters.toSet())
             }
             .observeOnFx()
             .subscribe { images.add(it) }

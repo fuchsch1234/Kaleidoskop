@@ -17,6 +17,17 @@ class TagsView : View() {
             action { find<CreateTagFragment>().openModal(StageStyle.UTILITY) }
         }
 
+        listview(imagesViewModel.filters) {
+            cellCache {
+                hbox {
+                    label(it.nameProperty)
+                    hyperlink("-").action {
+                        imagesViewModel.filters.remove(it)
+                    }
+                }
+            }
+        }
+
         listview(tagsViewModel.tags) {
             cellCache {
                 hbox {

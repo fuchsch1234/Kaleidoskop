@@ -24,10 +24,11 @@ class Repository(
             .subscribe { tagsList.addAll(it) }
     }
 
-    fun filteredImages(): Observable<Image> =
+    fun filteredImages(filters: Set<Tag>): Observable<Image> =
         kaleidoskopService.getAllImages()
             .subscribeOn(Schedulers.io())
             .concatMapIterable { it }
+            .filter { it.tags.intersect(filters).size == filters.size }
             .observeOnFx()
             .map { image ->
                 val imageFromList = images.find { it.id == image.id }
