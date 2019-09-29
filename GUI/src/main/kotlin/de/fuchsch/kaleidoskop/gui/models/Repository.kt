@@ -28,6 +28,7 @@ class Repository(
         kaleidoskopService.getAllImages()
             .subscribeOn(Schedulers.io())
             .concatMapIterable { it }
+            .observeOnFx()
             .map { image ->
                 val imageFromList = images.find { it.id == image.id }
                 if (imageFromList == null) {

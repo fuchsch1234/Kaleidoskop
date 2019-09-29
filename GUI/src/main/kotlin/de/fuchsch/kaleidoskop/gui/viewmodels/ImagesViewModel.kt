@@ -33,6 +33,6 @@ class ImagesViewModel : ViewModel() {
     }
 
     fun upload(files: List<File>) =
-        files.forEach { file -> repository.uploadImage(file).subscribeOnFx().subscribe() { images.add(it) } }
+        files.forEach { file -> repository.uploadImage(file).observeOnFx().subscribe() { images.add(it) } }
 
 }
