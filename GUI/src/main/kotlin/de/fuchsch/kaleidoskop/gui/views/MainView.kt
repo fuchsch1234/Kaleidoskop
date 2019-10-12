@@ -1,7 +1,6 @@
 package de.fuchsch.kaleidoskop.gui.views
 
-import tornadofx.View
-import tornadofx.borderpane
+import tornadofx.*
 
 class MainView: View("Kaleidoskop") {
 
@@ -10,6 +9,14 @@ class MainView: View("Kaleidoskop") {
         left<TagsView>()
 
         center<ImagesView>()
+
+        bottom {
+            button("Slideshow") {
+                action {
+                    find<SlideShowView>().openModal()
+                }
+            }
+        }
 
     }
 
