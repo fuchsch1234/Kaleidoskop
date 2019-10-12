@@ -13,7 +13,7 @@ class ImagesView : View() {
 
     private val selectedImageViewModel: SelectedImageViewModel by inject()
 
-    override val root = datagrid(imagesViewModel.images) {
+    override val root = datagrid(imagesViewModel.images.sorted { rhs, lhs -> rhs.id.compareTo(lhs.id) }) {
 
         cellWidth = 300.0
         cellHeight = cellWidth
